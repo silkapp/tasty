@@ -28,6 +28,7 @@ module Test.Tasty.Runners
   , optionParser
   , suiteOptionParser
   , defaultMainWithIngredients
+  , defaultMainWithIngredientsArgs
     -- * Running tests
   , Status(..)
   , Result(..)

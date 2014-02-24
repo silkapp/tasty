@@ -9,6 +9,7 @@ module Test.Tasty
   -- * Running tests
   , defaultMain
   , defaultMainWithIngredients
+  , defaultMainWithArgs
   , defaultIngredients
   , includingOptions
   -- * Adjusting and querying options
@@ -45,6 +46,9 @@ defaultIngredients = [listingTests, consoleTestReporter]
 -- | Parse the command line arguments and run the tests
 defaultMain :: TestTree -> IO ()
 defaultMain = defaultMainWithIngredients defaultIngredients
+
+defaultMainWithArgs :: [String] -> TestTree -> IO ()
+defaultMainWithArgs args = defaultMainWithIngredientsArgs defaultIngredients args
 
 -- | Locally adjust the option value for the given test subtree
 adjustOption :: IsOption v => (v -> v) -> TestTree -> TestTree

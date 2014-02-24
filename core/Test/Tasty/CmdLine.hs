@@ -8,13 +8,11 @@ module Test.Tasty.CmdLine
   , defaultMainWithIngredientsArgs
   ) where
 
-import Options.Applicative hiding (customExecParser)
-import Options.Applicative.Types hiding (Option)
+import Options.Applicative
 import Data.Monoid
 import Data.Proxy
 import System.Exit
 import System.Environment
-import System.IO
 
 import Test.Tasty.Core
 import Test.Tasty.CoreOptions
@@ -52,11 +50,11 @@ defaultMainWithIngredients ins testTree = do
 
 defaultMainWithIngredientsArgs :: [Ingredient] -> [String] -> TestTree -> IO ()
 defaultMainWithIngredientsArgs ins args testTree = do
-  opts <- customExecParser (prefs idm) args $
+  opts <- customExecParserWithArgs (prefs idm) (
     info (helper <*> suiteOptionParser ins testTree)
     ( fullDesc <>
       header "Mmm... tasty test suite"
-    )
+    )) args
 
   case tryIngredients ins opts testTree of
     Nothing ->
@@ -65,16 +63,3 @@ defaultMainWithIngredientsArgs ins args testTree = do
     Just act -> do
       ok <- act
       if ok then exitSuccess else exitFailure
-
-customExecParser :: ParserPrefs -> [String] -> ParserInfo a -> IO a
-customExecParser pprefs args pinfo = do
-  case execParserPure pprefs pinfo args of
-    Right a -> return a
-    Left failure -> do
-      progn <- getProgName
-      let c = errExitCode failure
-      msg <- errMessage failure progn
-      case c of
-        ExitSuccess -> putStr msg
-        _           -> hPutStr stderr msg
-      exitWith c
